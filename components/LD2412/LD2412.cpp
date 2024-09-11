@@ -88,10 +88,13 @@ void LD2412Component::setup() {
 void LD2412Component::read_all_info() {
   this->set_config_mode_(true);
   this->get_version_();
+  delay(10);  // NOLINT
   this->get_mac_();
+  delay(10);  // NOLINT
   //this->get_distance_resolution_();
   //this->get_light_control_();
   this->query_parameters_();
+  delay(10);  // NOLINT
   this->set_config_mode_(false);
 #ifdef USE_SELECT
   const auto baud_rate = std::to_string(this->parent_->get_baud_rate());
@@ -337,7 +340,7 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
     return true;
   }
   if (buffer[0] != 0xFD || buffer[1] != 0xFC || buffer[2] != 0xFB || buffer[3] != 0xFA) {  // check 4 frame start bytes
-    ESP_LOGE(TAG, "Error with last command : incorrect Header");
+    ESP_LOGE(TAG, "Error with last command : incorrect Header %02X, %02X, %02X, %02X", buffer[0], buffer[1], buffer[2], buffer[3]);
     return true;
   }
   if (buffer[COMMAND_STATUS] != 0x01) {
