@@ -174,6 +174,7 @@ void LD2412Component::handle_periodic_data_(uint8_t *buffer, int len) {
 //    this->engineering_mode_switch_->publish_state(engineering_mode);
 //  }
 //#endif
+  char target_state = buffer[TARGET_STATES];
 #ifdef USE_BINARY_SENSOR
   /*
     Target states: 9th
@@ -182,7 +183,6 @@ void LD2412Component::handle_periodic_data_(uint8_t *buffer, int len) {
     0x02 = Still targets
     0x03 = Moving+Still targets
   */
-  char target_state = buffer[TARGET_STATES];
   if (this->target_binary_sensor_ != nullptr) {
     this->target_binary_sensor_->publish_state(target_state != 0x00);
   }
@@ -202,31 +202,40 @@ void LD2412Component::handle_periodic_data_(uint8_t *buffer, int len) {
   */
 #ifdef USE_SENSOR
   if (this->moving_target_distance_sensor_ != nullptr) {
-    int new_moving_target_distance = this->two_byte_to_int_(buffer[MOVING_TARGET_LOW], buffer[MOVING_TARGET_HIGH]);
+    int new_moving_target_distance = target_state != 0x00 ? 
+      this->two_byte_to_int_(buffer[MOVING_TARGET_LOW], buffer[MOVING_TARGET_HIGH]) :
+      0;
     if (this->moving_target_distance_sensor_->get_state() != new_moving_target_distance)
       this->moving_target_distance_sensor_->publish_state(new_moving_target_distance);
   }
   if (this->moving_target_energy_sensor_ != nullptr) {
-    int new_moving_target_energy = buffer[MOVING_ENERGY];
+    int new_moving_target_energy = target_state != 0x00 ? 
+      buffer[MOVING_ENERGY] :
+      0;
     if (this->moving_target_energy_sensor_->get_state() != new_moving_target_energy)
       this->moving_target_energy_sensor_->publish_state(new_moving_target_energy);
   }
   if (this->still_target_distance_sensor_ != nullptr) {
-    int new_still_target_distance = this->two_byte_to_int_(buffer[STILL_TARGET_LOW], buffer[STILL_TARGET_HIGH]);
+    int new_still_target_distance = target_state != 0x00 ? 
+      this->two_byte_to_int_(buffer[STILL_TARGET_LOW], buffer[STILL_TARGET_HIGH]) : 
+      0;
     if (this->still_target_distance_sensor_->get_state() != new_still_target_distance)
       this->still_target_distance_sensor_->publish_state(new_still_target_distance);
   }
   if (this->still_target_energy_sensor_ != nullptr) {
-    int new_still_target_energy = buffer[STILL_ENERGY];
+    int new_still_target_energy = target_state != 0x00 ? 
+      buffer[STILL_ENERGY] : 
+      0;
     if (this->still_target_energy_sensor_->get_state() != new_still_target_energy)
       this->still_target_energy_sensor_->publish_state(new_still_target_energy);
   }
   if (this->detection_distance_sensor_ != nullptr) {
-    int new_detect_distance;
-    if(CHECK_BIT(target_state, 0))
+    int new_detect_distance = 0;
+    if(target_state != 0x00 && CHECK_BIT(target_state, 0)){
       new_detect_distance = this->two_byte_to_int_(buffer[MOVING_TARGET_LOW], buffer[MOVING_TARGET_HIGH]);
-    else
+    }else if(target_state != 0x00){
       new_detect_distance = this->two_byte_to_int_(buffer[STILL_TARGET_LOW], buffer[STILL_TARGET_HIGH]);
+    }
     if (this->detection_distance_sensor_->get_state() != new_detect_distance)
       this->detection_distance_sensor_->publish_state(new_detect_distance);
   }
