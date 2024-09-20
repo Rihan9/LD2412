@@ -22,11 +22,11 @@ CONF_OUT_PIN_LEVEL = "out_pin_level"
 
 CONFIG_SCHEMA = {
     cv.GenerateID(CONF_LD2412_ID): cv.use_id(LD2412Component),
-    # cv.Optional(CONF_DISTANCE_RESOLUTION): select.select_schema(
-    #     DistanceResolutionSelect,
-    #     entity_category=ENTITY_CATEGORY_CONFIG,
-    #     icon=ICON_RULER,
-    # ),
+    cv.Optional(CONF_DISTANCE_RESOLUTION): select.select_schema(
+        DistanceResolutionSelect,
+        entity_category=ENTITY_CATEGORY_CONFIG,
+        icon=ICON_RULER,
+    ),
     # cv.Optional(CONF_LIGHT_FUNCTION): select.select_schema(
     #     LightOutControlSelect,
     #     entity_category=ENTITY_CATEGORY_CONFIG,
@@ -47,12 +47,12 @@ CONFIG_SCHEMA = {
 
 async def to_code(config):
     LD2412_component = await cg.get_variable(config[CONF_LD2412_ID])
-    # if distance_resolution_config := config.get(CONF_DISTANCE_RESOLUTION):
-    #     s = await select.new_select(
-    #         distance_resolution_config, options=["0.2m", "0.5m", "0.75m"]
-    #     )
-    #     await cg.register_parented(s, config[CONF_LD2412_ID])
-    #     cg.add(LD2412_component.set_distance_resolution_select(s))
+    if distance_resolution_config := config.get(CONF_DISTANCE_RESOLUTION):
+        s = await select.new_select(
+            distance_resolution_config, options=["0.2m", "0.5m", "0.75m"]
+        )
+        await cg.register_parented(s, config[CONF_LD2412_ID])
+        cg.add(LD2412_component.set_distance_resolution_select(s))
     if out_pin_level_config := config.get(CONF_OUT_PIN_LEVEL):
         s = await select.new_select(out_pin_level_config, options=["low", "high"])
         await cg.register_parented(s, config[CONF_LD2412_ID])

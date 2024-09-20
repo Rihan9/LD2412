@@ -43,8 +43,8 @@ static const uint8_t CMD_QUERY = 0x0012;
 static const uint8_t CMD_BASIC_CONF = 0x0002;
 static const uint8_t CMD_GATE_SENS = 0x0064;
 static const uint8_t CMD_VERSION = 0x00A0;
-static const uint8_t CMD_QUERY_DISTANCE_RESOLUTION = 0x00AB;
-static const uint8_t CMD_SET_DISTANCE_RESOLUTION = 0x00AA;
+static const uint8_t CMD_QUERY_DISTANCE_RESOLUTION = 0x0011;
+static const uint8_t CMD_SET_DISTANCE_RESOLUTION = 0x0001;
 static const uint8_t CMD_QUERY_LIGHT_CONTROL = 0x00AE;
 static const uint8_t CMD_SET_LIGHT_CONTROL = 0x00AD;
 static const uint8_t CMD_SET_BAUD_RATE = 0x00A1;
@@ -70,7 +70,7 @@ static const std::map<std::string, uint8_t> BAUD_RATE_ENUM_TO_INT{
     {"57600", BAUD_RATE_57600},   {"115200", BAUD_RATE_115200}, {"230400", BAUD_RATE_230400},
     {"256000", BAUD_RATE_256000}, {"460800", BAUD_RATE_460800}};
 
-enum DistanceResolutionStructure : uint8_t { DISTANCE_RESOLUTION_0_2 = 0x02, DISTANCE_RESOLUTION_0_5 = 0x01, DISTANCE_RESOLUTION_0_75 = 0x00 };
+enum DistanceResolutionStructure : uint8_t { DISTANCE_RESOLUTION_0_2 = 0x03, DISTANCE_RESOLUTION_0_5 = 0x01, DISTANCE_RESOLUTION_0_75 = 0x00 };
 
 static const std::map<std::string, uint8_t> DISTANCE_RESOLUTION_ENUM_TO_INT{{"0.2m", DISTANCE_RESOLUTION_0_2},
                                                                             {"0.5m", DISTANCE_RESOLUTION_0_5},
@@ -198,7 +198,7 @@ class LD2412Component : public Component, public uart::UARTDevice {
   void read_all_info();
   void restart_and_read_all_info();
   void set_bluetooth(bool enable);
-  //void set_distance_resolution(const std::string &state);
+  void set_distance_resolution(const std::string &state);
   void set_baud_rate(const std::string &state);
   void factory_reset();
 
@@ -212,7 +212,7 @@ class LD2412Component : public Component, public uart::UARTDevice {
   void query_parameters_();
   void get_version_();
   void get_mac_();
-  //void get_distance_resolution_();
+  void get_distance_resolution_();
   void get_light_control_();
   void restart_();
 

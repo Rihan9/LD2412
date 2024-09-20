@@ -91,7 +91,8 @@ void LD2412Component::read_all_info() {
   delay(10);  // NOLINT
   this->get_mac_();
   delay(10);  // NOLINT
-  //this->get_distance_resolution_();
+  this->get_distance_resolution_();
+  delay(10);  // NOLINT
   //this->get_light_control_();
   this->query_parameters_();
   delay(10);  // NOLINT
@@ -385,17 +386,17 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
       }
 #endif
       break;
-//     case lowbyte(CMD_QUERY_DISTANCE_RESOLUTION): {
-//       std::string distance_resolution =
-//           DISTANCE_RESOLUTION_INT_TO_ENUM.at(this->two_byte_to_int_(buffer[10], buffer[11]));
-//       ESP_LOGV(TAG, "Distance resolution is: %s", const_cast<char *>(distance_resolution.c_str()));
-// #ifdef USE_SELECT
-//       if (this->distance_resolution_select_ != nullptr &&
-//           this->distance_resolution_select_->state != distance_resolution) {
-//         this->distance_resolution_select_->publish_state(distance_resolution);
-//       }
-// #endif
-//     } break;
+    case lowbyte(CMD_QUERY_DISTANCE_RESOLUTION): {
+      std::string distance_resolution =
+          DISTANCE_RESOLUTION_INT_TO_ENUM.at(this->two_byte_to_int_(buffer[10], buffer[11]));
+      ESP_LOGV(TAG, "Distance resolution is: %s", const_cast<char *>(distance_resolution.c_str()));
+#ifdef USE_SELECT
+      if (this->distance_resolution_select_ != nullptr &&
+          this->distance_resolution_select_->state != distance_resolution) {
+        this->distance_resolution_select_->publish_state(distance_resolution);
+      }
+#endif
+    } break;
     //case lowbyte(CMD_QUERY_LIGHT_CONTROL): {
     //  this->light_function_ = LIGHT_FUNCTION_INT_TO_ENUM.at(buffer[10]);
     //  this->light_threshold_ = buffer[11] * 1.0;
@@ -436,15 +437,15 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
       }
 #endif
       break;
+    case lowbyte(CMD_SET_DISTANCE_RESOLUTION):
+      ESP_LOGV(TAG, "Handled set distance resolution command");
+      break;
 //    case lowbyte(CMD_GATE_SENS):
 //      ESP_LOGV(TAG, "Handled sensitivity command");
 //      break;
 //    case lowbyte(CMD_BLUETOOTH):
 //      ESP_LOGV(TAG, "Handled bluetooth command");
 //      break;
-    // case lowbyte(CMD_SET_DISTANCE_RESOLUTION):
-    //   ESP_LOGV(TAG, "Handled set distance resolution command");
-    //   break;
 //    case lowbyte(CMD_SET_LIGHT_CONTROL):
 //      ESP_LOGV(TAG, "Handled set light control command");
 //      break;
@@ -551,12 +552,12 @@ void LD2412Component::set_config_mode_(bool enable) {
 //   this->set_timeout(200, [this]() { this->restart_and_read_all_info(); });
 // }
 
-// void LD2412Component::set_distance_resolution(const std::string &state) {
-//   this->set_config_mode_(true);
-//   uint8_t cmd_value[2] = {DISTANCE_RESOLUTION_ENUM_TO_INT.at(state), 0x00};
-//   this->send_command_(CMD_SET_DISTANCE_RESOLUTION, cmd_value, 2);
-//   this->set_timeout(200, [this]() { this->restart_and_read_all_info(); });
-// }
+void LD2412Component::set_distance_resolution(const std::string &state) {
+  this->set_config_mode_(true);
+  uint8_t cmd_value[6] = {DISTANCE_RESOLUTION_ENUM_TO_INT.at(state), 0x00, 0x00, 0x00, 0x00, 0x00};
+  this->send_command_(CMD_SET_DISTANCE_RESOLUTION, cmd_value, 6);
+  this->set_timeout(200, [this]() { this->restart_and_read_all_info(); });
+}
 
 void LD2412Component::set_baud_rate(const std::string &state) {
   this->set_config_mode_(true);
@@ -599,7 +600,7 @@ void LD2412Component::get_mac_() {
   uint8_t cmd_value[2] = {0x01, 0x00};
   this->send_command_(CMD_MAC, cmd_value, 2);
 }
-//void LD2412Component::get_distance_resolution_() { this->send_command_(CMD_QUERY_DISTANCE_RESOLUTION, nullptr, 0); }
+void LD2412Component::get_distance_resolution_() { this->send_command_(CMD_QUERY_DISTANCE_RESOLUTION, nullptr, 0); }
 
 // void LD2412Component::get_light_control_() { this->send_command_(CMD_QUERY_LIGHT_CONTROL, nullptr, 0); }
 
