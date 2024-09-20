@@ -73,11 +73,11 @@ What does work
 - Output pin configuration
 - Restart and Query button
 - Uart Band Rate configuration **NOT TESTED
+- Distance resolution
 
 What doesn't
 --
 - Factory reset button. I still don't know why but i'm working on it
-- Bluetooth switch. Not implemented by the production company in the serial protocol
-- Distance resolution. The worst lacking for me but it doesn't seem implemented by the production company (no information available in the documentation)
+- Bluetooth switch. Not implemented by the production company in the serial protocol -- finded an updated documentation, work in progress
 - Engineering mode: forgive me, but it's a bit too much for me
 - Light configuration / threashold and light sensor ot implemented by the production company in the serial protocol for the first two. The light sensor is available only in engineering mode, quite useless.
