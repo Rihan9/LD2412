@@ -46,6 +46,8 @@ select:
   - platform: LD2412
     out_pin_level:
       name: 'Hardware output pin level'
+    distance_resolution:
+      name: 'Distance resolution'
 button:
   - platform: LD2412
     factory_reset:
