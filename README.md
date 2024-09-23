@@ -7,6 +7,13 @@ Hi all! This repo contains the revision of the official LD2410 component adapted
 Configuration example
 --
 ```
+external_components:
+  - source:
+      type: git
+      url: https://github.com/Rihan9/LD2412
+      ref: main
+    components: [LD2412]
+
 LD2412:
   id: ld2412
   throttle: 3s
