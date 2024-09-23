@@ -152,7 +152,7 @@ void LD2412Component::handle_periodic_data_(uint8_t *buffer, int len) {
     return;  // 4 frame start bytes + 2 length bytes + 1 data end byte + 1 crc byte + 4 frame end bytes
   if (buffer[0] != 0xF4 || buffer[1] != 0xF3 || buffer[2] != 0xF2 || buffer[3] != 0xF1)  // check 4 frame start bytes
     return;
-  if (buffer[7] != HEAD || buffer[len - 6] != END || buffer[len - 5] != CHECK)  // Check constant values
+  if (buffer[7] != HEAD || buffer[len - 6] != END)  // Check constant values
     return;  // data head=0xAA, data end=0x55, crc=0x00
 
   /*
@@ -518,7 +518,7 @@ void LD2412Component::readline_(int readch, uint8_t *buffer, int len) {
         buffer[pos - 2] == DATA_FRAME_END[2] && 
         buffer[pos - 1] == DATA_FRAME_END[3]
       ) {
-        ESP_LOGV(TAG, "Will handle Periodic Data");
+        ESP_LOGV(TAG, "Will handle Periodic Data:  %s", format_buffer(buffer, pos).c_str());
         this->handle_periodic_data_(buffer, pos);
         pos = 0;  // Reset position index ready for next time
       } else if (

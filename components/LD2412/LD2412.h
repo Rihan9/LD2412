@@ -107,6 +107,9 @@ static const uint8_t CMD_FRAME_END[4] = {0x04, 0x03, 0x02, 0x01};
 // Data Header & Footer
 static const uint8_t DATA_FRAME_HEADER[4] = {0xF4, 0xF3, 0xF2, 0xF1};
 static const uint8_t DATA_FRAME_END[4] = {0xF8, 0xF7, 0xF6, 0xF5};
+
+static const char HEX[] = "0123456789ABCDEF"; 
+
 /*
 Data Type: 6th byte
 Target states: 9th byte
@@ -215,6 +218,18 @@ class LD2412Component : public Component, public uart::UARTDevice {
   void get_distance_resolution_();
   void get_light_control_();
   void restart_();
+
+  std::string format_buffer(uint8_t* buffer, size_t len)
+  {
+    std::string version;
+    version.resize(len*2+1);
+    for (size_t i = 0; i < len; i++)
+    {
+      version[(i * 2) + 0] = HEX[((buffer[i] & 0xF0) >> 4)];
+      version[(i * 2) + 1] = HEX[((buffer[i] & 0x0F) >> 0)];
+    }
+    return version;
+  }
 
   int32_t last_periodic_millis_ = millis();
   int32_t last_engineering_mode_change_millis_ = millis();
