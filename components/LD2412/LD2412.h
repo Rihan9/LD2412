@@ -174,6 +174,7 @@ class LD2412Component : public Component, public uart::UARTDevice {
   SUB_SELECT(baud_rate)
   SUB_SELECT(light_function)
   SUB_SELECT(out_pin_level)
+  SUB_SELECT(mode)
 #endif
 #ifdef USE_SWITCH
   SUB_SWITCH(engineering_mode)
