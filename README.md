@@ -55,6 +55,18 @@ select:
       name: 'Hardware output pin level'
     distance_resolution:
       name: 'Distance resolution'
+    baud_rate:
+      name: "baud rate"
+      on_value:
+        - delay: 3s
+        - lambda: |-
+            id(uart_bus).flush();
+            uint32_t new_baud_rate = stoi(x);
+            ESP_LOGD("change_baud_rate", "Changing baud rate from %i to %i",id(uart_bus).get_baud_rate(), new_baud_rate);
+            if (id(uart_bus).get_baud_rate() != new_baud_rate) {
+            id(uart_bus).set_baud_rate(new_baud_rate);
+            id(uart_bus).load_settings();
+            }
 button:
   - platform: LD2412
     factory_reset:

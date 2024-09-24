@@ -589,7 +589,12 @@ void LD2412Component::set_engineering_mode(bool enable) {
 void LD2412Component::factory_reset() {
   this->set_config_mode_(true);
   this->send_command_(CMD_RESET, nullptr, 0);
-  this->set_timeout(200, [this]() { this->restart_and_read_all_info(); });
+#ifdef USE_SELECT
+  if (this->baud_rate_select_ != nullptr){
+    this->baud_rate_select_->publish_state("115200");
+  }
+#endif
+  this->set_timeout(2000, [this]() { this->restart_and_read_all_info(); });
 }
 
 void LD2412Component::restart_() { this->send_command_(CMD_RESTART, nullptr, 0); }
