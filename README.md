@@ -82,6 +82,10 @@ text_sensor:
       name: "firmware version"
     mac_address:
       name: "mac address"
+switch:
+  - platform: LD2412
+    bluetooth:
+      name: "Bluetooth"
 ```
 What does work
 --
