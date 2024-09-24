@@ -96,8 +96,9 @@ What does work
 - Uart Band Rate configuration
 - Distance resolution
 - Factory reset button
+- Bluetooth switch. 
 
 What doesn't
-- Bluetooth switch. Not implemented by the production company in the serial protocol -- finded an updated documentation, work in progress
+--
 - Engineering mode: forgive me, but it's a bit too much for me
 - Light configuration / threashold and light sensor ot implemented by the production company in the serial protocol for the first two. The light sensor is available only in engineering mode, quite useless.

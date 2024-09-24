@@ -544,13 +544,13 @@ void LD2412Component::set_config_mode_(bool enable) {
   this->send_command_(cmd, enable ? cmd_value : nullptr, 2);
 }
 
-// void LD2412Component::set_bluetooth(bool enable) {
-//   this->set_config_mode_(true);
-//   uint8_t enable_cmd_value[2] = {0x01, 0x00};
-//   uint8_t disable_cmd_value[2] = {0x00, 0x00};
-//   this->send_command_(CMD_BLUETOOTH, enable ? enable_cmd_value : disable_cmd_value, 2);
-//   this->set_timeout(200, [this]() { this->restart_and_read_all_info(); });
-// }
+void LD2412Component::set_bluetooth(bool enable) {
+  this->set_config_mode_(true);
+  uint8_t enable_cmd_value[2] = {0x01, 0x00};
+  uint8_t disable_cmd_value[2] = {0x00, 0x00};
+  this->send_command_(CMD_BLUETOOTH, enable ? enable_cmd_value : disable_cmd_value, 2);
+  this->set_timeout(200, [this]() { this->restart_and_read_all_info(); });
+}
 
 void LD2412Component::set_distance_resolution(const std::string &state) {
   this->set_config_mode_(true);
