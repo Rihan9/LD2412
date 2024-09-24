@@ -67,6 +67,8 @@ select:
             id(uart_bus).set_baud_rate(new_baud_rate);
             id(uart_bus).load_settings();
             }
+    mode:
+      name: "Mode"
 button:
   - platform: LD2412
     factory_reset:
