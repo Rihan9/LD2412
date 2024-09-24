@@ -97,6 +97,8 @@ void LD2412Component::read_all_info() {
   //this->get_light_control_();
   this->query_parameters_();
   delay(10);  // NOLINT
+  this->query_dymanic_background_correction_();
+  delay(10);  // NOLINT
   this->set_config_mode_(false);
 #ifdef USE_SELECT
   const auto baud_rate = std::to_string(this->parent_->get_baud_rate());
@@ -352,6 +354,10 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
   }
   if (buffer[0] != 0xFD || buffer[1] != 0xFC || buffer[2] != 0xFB || buffer[3] != 0xFA) {  // check 4 frame start bytes
     ESP_LOGE(TAG, "Error with last command : incorrect Header %02X, %02X, %02X, %02X", buffer[0], buffer[1], buffer[2], buffer[3]);
+    //just a patch to handle a strange behavior. better this than have a costant wrong mode
+    if(this->dynamic_bakground_correction_active_){
+      this->query_dymanic_background_correction_();
+    }
     return true;
   }
   if (buffer[COMMAND_STATUS] != 0x01) {
@@ -598,6 +604,7 @@ void LD2412Component::set_mode(const std::string &state) {
   this->set_config_mode_(false);
   if(cmd == CMD_DYNAMIC_BACKGROUND_CORRECTION){
     this->dynamic_bakground_correction_active_ = true;
+    this->set_timeout(1000, [this]() { this->query_dymanic_background_correction_(); });
   }
 }
 
