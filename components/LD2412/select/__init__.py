@@ -14,10 +14,12 @@ from .. import CONF_LD2412_ID, LD2412Component, LD2412_ns
 BaudRateSelect = LD2412_ns.class_("BaudRateSelect", select.Select)
 DistanceResolutionSelect = LD2412_ns.class_("DistanceResolutionSelect", select.Select)
 LightOutControlSelect = LD2412_ns.class_("LightOutControlSelect", select.Select)
+ModeSelect = LD2412_ns.class_("ModeSelect", select.Select)
 
 CONF_DISTANCE_RESOLUTION = "distance_resolution"
 CONF_LIGHT_FUNCTION = "light_function"
 CONF_OUT_PIN_LEVEL = "out_pin_level"
+CONF_MODE = "mode"
 
 
 CONFIG_SCHEMA = {
@@ -41,6 +43,10 @@ CONFIG_SCHEMA = {
         BaudRateSelect,
         entity_category=ENTITY_CATEGORY_CONFIG,
         icon=ICON_THERMOMETER,
+    ),
+    cv.Optional(CONF_MODE): select.select_schema(
+        ModeSelect,
+        entity_category=ENTITY_CATEGORY_CONFIG
     ),
 }
 
@@ -79,3 +85,14 @@ async def to_code(config):
         )
         await cg.register_parented(s, config[CONF_LD2412_ID])
         cg.add(LD2412_component.set_baud_rate_select(s))
+    if mode_config := config.get(CONF_MODE):
+        s = await select.new_select(
+            mode_config,
+            options=[
+                "Normal",
+                "Engineering",
+                "Dynamic background correction",
+            ],
+        )
+        await cg.register_parented(s, config[CONF_LD2412_ID])
+        cg.add(LD2412_component.set_mode_select(s))

@@ -53,6 +53,8 @@ static const uint8_t CMD_MAC = 0x00A5;
 static const uint8_t CMD_RESET = 0x00A2;
 static const uint8_t CMD_RESTART = 0x00A3;
 static const uint8_t CMD_BLUETOOTH = 0x00A4;
+static const uint8_t CMD_DYNAMIC_BACKGROUND_CORRECTION = 0x000B;
+static const uint8_t CMD_QUEY_DYNAMIC_BACKGROUND_CORRECTION = 0x001B;
 
 enum BaudRateStructure : uint8_t {
   BAUD_RATE_9600 = 1,
@@ -69,6 +71,16 @@ static const std::map<std::string, uint8_t> BAUD_RATE_ENUM_TO_INT{
     {"9600", BAUD_RATE_9600},     {"19200", BAUD_RATE_19200},   {"38400", BAUD_RATE_38400},
     {"57600", BAUD_RATE_57600},   {"115200", BAUD_RATE_115200}, {"230400", BAUD_RATE_230400},
     {"256000", BAUD_RATE_256000}, {"460800", BAUD_RATE_460800}};
+
+enum ModeStructure : uint8_t {
+  NORMAL_MODE = 1,
+  ENGINEERING_MODE = 2,
+  BACKGROUND_INIT_MODE = 3
+};
+
+static const std::map<std::string, uint8_t> MODE_ENUM_TO_INT{
+    {"Normal", NORMAL_MODE},{"Engineering", ENGINEERING_MODE},{"Dynamic background correction", BACKGROUND_INIT_MODE}
+};
 
 enum DistanceResolutionStructure : uint8_t { DISTANCE_RESOLUTION_0_2 = 0x03, DISTANCE_RESOLUTION_0_5 = 0x01, DISTANCE_RESOLUTION_0_75 = 0x00 };
 
@@ -198,6 +210,7 @@ class LD2412Component : public Component, public uart::UARTDevice {
   void set_throttle(uint16_t value) { this->throttle_ = value; };
   void set_bluetooth_password(const std::string &password);
   void set_engineering_mode(bool enable);
+  void set_mode(const std::string &state);
   void read_all_info();
   void restart_and_read_all_info();
   void set_bluetooth(bool enable);
@@ -218,6 +231,7 @@ class LD2412Component : public Component, public uart::UARTDevice {
   void get_distance_resolution_();
   void get_light_control_();
   void restart_();
+  void query_dymanic_background_correction_();
 
   std::string format_buffer(uint8_t* buffer, size_t len)
   {
@@ -237,6 +251,7 @@ class LD2412Component : public Component, public uart::UARTDevice {
   std::string version_;
   std::string mac_;
   std::string out_pin_level_;
+  bool dynamic_bakground_correction_active_;
   std::string light_function_;
   float light_threshold_ = -1;
 #ifdef USE_NUMBER

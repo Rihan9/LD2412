@@ -58,6 +58,7 @@ void LD2412Component::dump_config() {
   LOG_SELECT("  ", "OutPinLevelSelect", this->out_pin_level_select_);
   //LOG_SELECT("  ", "DistanceResolutionSelect", this->distance_resolution_select_);
   LOG_SELECT("  ", "BaudRateSelect", this->baud_rate_select_);
+  LOG_SELECT("  ", "ModeSelect", this->mode_select_);
 #endif
 #ifdef USE_NUMBER
 //  LOG_NUMBER("  ", "LightThresholdNumber", this->light_threshold_number_);
@@ -361,7 +362,7 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
     ESP_LOGE(TAG, "Error with last command , last buffer was: %u , %u", buffer[8], buffer[9]);
     return true;
   }
-
+  bool dynamic_background_correction_active;
   switch (buffer[COMMAND]) {
     case lowbyte(CMD_ENABLE_CONF):
       ESP_LOGV(TAG, "Handled Enable conf command");
@@ -439,6 +440,19 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
       break;
     case lowbyte(CMD_SET_DISTANCE_RESOLUTION):
       ESP_LOGV(TAG, "Handled set distance resolution command");
+      break;
+    case lowbyte(CMD_QUEY_DYNAMIC_BACKGROUND_CORRECTION):
+      ESP_LOGV(TAG, "Handled query dynamic background correction");
+      dynamic_background_correction_active = (buffer[10] == 0x01);
+      if(this->dynamic_bakground_correction_active_ != dynamic_background_correction_active && dynamic_background_correction_active){
+        this->mode_select_->publish_state("Dynamic background correction");
+      }else if(this->dynamic_bakground_correction_active_ != dynamic_background_correction_active && !dynamic_background_correction_active){
+        this->mode_select_->publish_state("Normal");
+      }
+      this->dynamic_bakground_correction_active_ = dynamic_background_correction_active;
+      if(this->dynamic_bakground_correction_active_){
+        this->set_timeout(1000, [this]() { this->query_dymanic_background_correction_(); });
+      }
       break;
 //    case lowbyte(CMD_GATE_SENS):
 //      ESP_LOGV(TAG, "Handled sensitivity command");
@@ -564,6 +578,33 @@ void LD2412Component::set_baud_rate(const std::string &state) {
   uint8_t cmd_value[2] = {BAUD_RATE_ENUM_TO_INT.at(state), 0x00};
   this->send_command_(CMD_SET_BAUD_RATE, cmd_value, 2);
   this->set_timeout(200, [this]() { this->restart_(); });
+}
+
+void LD2412Component::set_mode(const std::string &state) {
+  this->set_config_mode_(true);
+  uint8_t cmd;
+  switch(MODE_ENUM_TO_INT.at(state)){
+    case NORMAL_MODE:
+      cmd = CMD_DISABLE_ENG;
+      break;
+    case ENGINEERING_MODE:
+      cmd = CMD_ENABLE_ENG;
+      break;
+    case BACKGROUND_INIT_MODE:
+      cmd = CMD_DYNAMIC_BACKGROUND_CORRECTION;
+      break;
+  }
+  this->send_command_(cmd, nullptr, 0);
+  this->set_config_mode_(false);
+  if(cmd == CMD_DYNAMIC_BACKGROUND_CORRECTION){
+    this->dynamic_bakground_correction_active_ = true;
+  }
+}
+
+void LD2412Component::query_dymanic_background_correction_(){
+  this->set_config_mode_(true);
+  this->send_command_(CMD_QUEY_DYNAMIC_BACKGROUND_CORRECTION, nullptr, 0);
+  this->set_config_mode_(false);
 }
 
 // void LD2412Component::set_bluetooth_password(const std::string &password) {
