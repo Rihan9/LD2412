@@ -48,6 +48,76 @@ number:
       name: "min distance gate"
     max_distance_gate:
       name: "max distance gate"
+    g0:
+      move_threshold:
+        name: g00 move threshold
+      still_threshold:
+        name: g00 still threshold
+    g1:
+      move_threshold:
+        name: g01 move threshold
+      still_threshold:
+        name: g01 still threshold
+    g2:
+      move_threshold:
+        name: g02 move threshold
+      still_threshold:
+        name: g02 still threshold
+    g3:
+      move_threshold:
+        name: g03 move threshold
+      still_threshold:
+        name: g03 still threshold
+    g4:
+      move_threshold:
+        name: g04 move threshold
+      still_threshold:
+        name: g04 still threshold
+    g5:
+      move_threshold:
+        name: g05 move threshold
+      still_threshold:
+        name: g05 still threshold
+    g6:
+      move_threshold:
+        name: g06 move threshold
+      still_threshold:
+        name: g06 still threshold
+    g7:
+      move_threshold:
+        name: g07 move threshold
+      still_threshold:
+        name: g07 still threshold
+    g8:
+      move_threshold:
+        name: g08 move threshold
+      still_threshold:
+        name: g08 still threshold
+    g9:
+      move_threshold:
+        name: g09 move threshold
+      still_threshold:
+        name: g09 still threshold
+    g10:
+      move_threshold:
+        name: g10 move threshold
+      still_threshold:
+        name: g10 still threshold
+    g11:
+      move_threshold:
+        name: g11 move threshold
+      still_threshold:
+        name: g11 still threshold
+    g12:
+      move_threshold:
+        name: g12 move threshold
+      still_threshold:
+        name: g12 still threshold
+    g13:
+      move_threshold:
+        name: g13 move threshold
+      still_threshold:
+        name: g13 still threshold
   
 select:
   - platform: LD2412
@@ -103,8 +173,9 @@ What does work
 - Distance resolution
 - Factory reset button
 - Bluetooth switch. 
+- Engineering mode: siwth to and back from, threshold configuration
 
 What doesn't
 --
-- Engineering mode: forgive me, but it's a bit too much for me
+- Engineering mode: gate sensor when the engineering mode is active
 - Light configuration / threashold and light sensor ot implemented by the production company in the serial protocol for the first two. The light sensor is available only in engineering mode, quite useless.

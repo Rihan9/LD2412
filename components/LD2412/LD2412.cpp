@@ -99,6 +99,10 @@ void LD2412Component::read_all_info() {
   delay(10);  // NOLINT
   this->query_dymanic_background_correction_();
   delay(10);  // NOLINT
+#ifdef USE_NUMBER
+  this->get_gate_threshold();
+  delay(10);  // NOLINT
+#endif
   this->set_config_mode_(false);
 #ifdef USE_SELECT
   const auto baud_rate = std::to_string(this->parent_->get_baud_rate());
@@ -472,6 +476,26 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
 //    case lowbyte(CMD_BT_PASSWORD):
 //      ESP_LOGV(TAG, "Handled set bluetooth password command");
 //      break;
+    case lowbyte(CMD_QUERY_MOTION_GATE_SENS):{
+      std::vector<std::function<void(void)>> updates;
+      for(int i = 0; i < this->gate_still_threshold_numbers_.size(); i++){
+        updates.push_back(set_number_value(this->gate_move_threshold_numbers_[i], buffer[10+i]));
+      }
+      for (auto &update : updates) {
+        update();
+      }
+      break;
+    }
+    case lowbyte(CMD_QUERY_STATIC_GATE_SENS):{
+      std::vector<std::function<void(void)>> updates;
+      for(int i = 0; i < this->gate_still_threshold_numbers_.size(); i++){
+        updates.push_back(set_number_value(this->gate_still_threshold_numbers_[i], buffer[10+i]));
+      }
+      for (auto &update : updates) {
+        update();
+      }
+      break;
+    }
     case lowbyte(CMD_QUERY):  // Query parameters response
     {
 #ifdef USE_NUMBER
@@ -701,42 +725,40 @@ void LD2412Component::set_basic_config() {
   this->set_config_mode_(false);
 }
 
-// void LD2412Component::set_gate_threshold(uint8_t gate) {
-//   number::Number *motionsens = this->gate_move_threshold_numbers_[gate];
-//   number::Number *stillsens = this->gate_still_threshold_numbers_[gate];
-// 
-//   if (!motionsens->has_state() || !stillsens->has_state()) {
-//     return;
-//   }
-//   int motion = static_cast<int>(motionsens->state);
-//   int still = static_cast<int>(stillsens->state);
-// 
-//   this->set_config_mode_(true);
-//   // reference
-//   // https://drive.google.com/drive/folders/1p4dhbEJA3YubyIjIIC7wwVsSo8x29Fq-?spm=a2g0o.detail.1000023.17.93465697yFwVxH
-//   //   Send data: configure the motion sensitivity of distance gate 3 to 40, and the static sensitivity of 40
-//   // 00 00 (gate)
-//   // 03 00 00 00 (gate number)
-//   // 01 00 (motion sensitivity)
-//   // 28 00 00 00 (value)
-//   // 02 00 (still sensitivtiy)
-//   // 28 00 00 00 (value)
-//   uint8_t value[18] = {0x00, 0x00, lowbyte(gate),   highbyte(gate),   0x00, 0x00,
-//                        0x01, 0x00, lowbyte(motion), highbyte(motion), 0x00, 0x00,
-//                        0x02, 0x00, lowbyte(still),  highbyte(still),  0x00, 0x00};
-//   this->send_command_(CMD_GATE_SENS, value, 18);
-//   delay(50);  // NOLINT
-//   this->query_parameters_();
-//   this->set_config_mode_(false);
-// }
+void LD2412Component::set_gate_threshold() {
+  this->set_config_mode_(true);
+  uint8_t value[14];// = {0x00, 0x00, lowbyte(gate),   highbyte(gate),   0x00, 0x00,
+                    //   0x01, 0x00, lowbyte(motion), highbyte(motion), 0x00, 0x00,
+                    //   0x02, 0x00, lowbyte(still),  highbyte(still),  0x00, 0x00};
+  for(int i = 0; i < this->gate_move_threshold_numbers_.size(); i++){
+    value[i] = lowbyte(static_cast<int>(this->gate_move_threshold_numbers_[i]->state));
+  }
+  this->send_command_(CMD_MOTION_GATE_SENS, value, 14);
+  delay(50);  // NOLINT
+  for(int i = 0; i < this->gate_still_threshold_numbers_.size(); i++){
+    value[i] = lowbyte(static_cast<int>(this->gate_still_threshold_numbers_[i]->state));
+  }
+  this->send_command_(CMD_STATIC_GATE_SENS, value, 14);
+  delay(50);  // NOLINT
+  this->set_config_mode_(false);
+  // this->query_parameters_();
+}
 
-// void LD2412Component::set_gate_still_threshold_number(int gate, number::Number *n) {
-//   this->gate_still_threshold_numbers_[gate] = n;
-// }
-// 
-// void LD2412Component::set_gate_move_threshold_number(int gate, number::Number *n) {
-//   this->gate_move_threshold_numbers_[gate] = n;
-// }
+void LD2412Component::get_gate_threshold() {
+  this->set_config_mode_(true);
+  this->send_command_(CMD_QUERY_MOTION_GATE_SENS, nullptr, 0);
+  delay(50);  // NOLINT
+  this->send_command_(CMD_QUERY_STATIC_GATE_SENS, nullptr, 0);
+  delay(50);  // NOLINT
+  this->set_config_mode_(false);
+}
+void LD2412Component::set_gate_still_threshold_number(int gate, number::Number *n) {
+  this->gate_still_threshold_numbers_[gate] = n;
+}
+
+void LD2412Component::set_gate_move_threshold_number(int gate, number::Number *n) {
+  this->gate_move_threshold_numbers_[gate] = n;
+}
 #endif
 
 void LD2412Component::set_light_out_control() {

@@ -16,7 +16,7 @@ from esphome.const import (
 )
 from .. import CONF_LD2412_ID, LD2412Component, LD2412_ns
 
-# GateThresholdNumber = LD2412_ns.class_("GateThresholdNumber", number.Number)
+GateThresholdNumber = LD2412_ns.class_("GateThresholdNumber", number.Number)
 # LightThresholdNumber = LD2412_ns.class_("LightThresholdNumber", number.Number)
 MaxDistanceTimeoutNumber = LD2412_ns.class_("MaxDistanceTimeoutNumber", number.Number)
 
@@ -57,30 +57,52 @@ CONFIG_SCHEMA = cv.Schema(
         # ),
     }
 )
-
-# CONFIG_SCHEMA = CONFIG_SCHEMA.extend(
-#     {
-#         cv.Optional(f"g{x}"): cv.Schema(
-#             {
-#                 cv.Required(CONF_MOVE_THRESHOLD): number.number_schema(
-#                     GateThresholdNumber,
-#                     device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
-#                     unit_of_measurement=UNIT_PERCENT,
-#                     entity_category=ENTITY_CATEGORY_CONFIG,
-#                     icon=ICON_MOTION_SENSOR,
-#                 ),
-#                 cv.Required(CONF_STILL_THRESHOLD): number.number_schema(
-#                     GateThresholdNumber,
-#                     device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
-#                     unit_of_measurement=UNIT_PERCENT,
-#                     entity_category=ENTITY_CATEGORY_CONFIG,
-#                     icon=ICON_MOTION_SENSOR,
-#                 ),
-#             }
-#         )
-#         for x in range(9)
-#     }
-# )
+# for x in range(14):
+#     CONFIG_SCHEMA = CONFIG_SCHEMA.extend(
+#         {
+#             cv.Optional(f"g{x}"): cv.Schema(
+#                 {
+#                     cv.Required(CONF_MOVE_THRESHOLD): number.number_schema(
+#                         GateThresholdNumber,
+#                         device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
+#                         unit_of_measurement=UNIT_PERCENT,
+#                         entity_category=ENTITY_CATEGORY_CONFIG,
+#                         icon=ICON_MOTION_SENSOR,
+#                     ),
+#                     cv.Required(CONF_STILL_THRESHOLD): number.number_schema(
+#                         GateThresholdNumber,
+#                         device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
+#                         unit_of_measurement=UNIT_PERCENT,
+#                         entity_category=ENTITY_CATEGORY_CONFIG,
+#                         icon=ICON_MOTION_SENSOR,
+#                     ),
+#                 }
+#             )
+#         }
+#     )
+CONFIG_SCHEMA = CONFIG_SCHEMA.extend(
+    {
+        cv.Optional(f"g{x}"): cv.Schema(
+            {
+                cv.Required(CONF_MOVE_THRESHOLD): number.number_schema(
+                    GateThresholdNumber,
+                    device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
+                    unit_of_measurement=UNIT_PERCENT,
+                    entity_category=ENTITY_CATEGORY_CONFIG,
+                    icon=ICON_MOTION_SENSOR,
+                ),
+                cv.Required(CONF_STILL_THRESHOLD): number.number_schema(
+                    GateThresholdNumber,
+                    device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
+                    unit_of_measurement=UNIT_PERCENT,
+                    entity_category=ENTITY_CATEGORY_CONFIG,
+                    icon=ICON_MOTION_SENSOR,
+                ),
+            }
+        )
+        for x in range(14)
+    }
+)
 
 
 async def to_code(config):
@@ -103,25 +125,25 @@ async def to_code(config):
         )
         await cg.register_parented(n, config[CONF_LD2412_ID])
         cg.add(LD2412_component.set_max_distance_gate_number(n))
+    for x in range(14):
+        if gate_conf := config.get(f"g{x}"):
+            move_config = gate_conf[CONF_MOVE_THRESHOLD]
+            n = cg.new_Pvariable(move_config[CONF_ID], x)
+            await number.register_number(
+                n, move_config, min_value=0, max_value=100, step=1
+            )
+            await cg.register_parented(n, config[CONF_LD2412_ID])
+            cg.add(LD2412_component.set_gate_move_threshold_number(x, n))
+            still_config = gate_conf[CONF_STILL_THRESHOLD]
+            n = cg.new_Pvariable(still_config[CONF_ID], x)
+            await number.register_number(
+                n, still_config, min_value=0, max_value=100, step=1
+            )
+            await cg.register_parented(n, config[CONF_LD2412_ID])
+            cg.add(LD2412_component.set_gate_still_threshold_number(x, n))
     # if light_threshold_config := config.get(CONF_LIGHT_THRESHOLD):
     #     n = await number.new_number(
     #         light_threshold_config, min_value=0, max_value=255, step=1
     #     )
     #     await cg.register_parented(n, config[CONF_LD2412_ID])
     #     cg.add(LD2412_component.set_light_threshold_number(n))
-    # for x in range(9):
-    #     if gate_conf := config.get(f"g{x}"):
-    #         move_config = gate_conf[CONF_MOVE_THRESHOLD]
-    #         n = cg.new_Pvariable(move_config[CONF_ID], x)
-    #         await number.register_number(
-    #             n, move_config, min_value=0, max_value=100, step=1
-    #         )
-    #         await cg.register_parented(n, config[CONF_LD2412_ID])
-    #         cg.add(LD2412_component.set_gate_move_threshold_number(x, n))
-    #         still_config = gate_conf[CONF_STILL_THRESHOLD]
-    #         n = cg.new_Pvariable(still_config[CONF_ID], x)
-    #         await number.register_number(
-    #             n, still_config, min_value=0, max_value=100, step=1
-    #         )
-    #         await cg.register_parented(n, config[CONF_LD2412_ID])
-    #         cg.add(LD2412_component.set_gate_still_threshold_number(x, n))

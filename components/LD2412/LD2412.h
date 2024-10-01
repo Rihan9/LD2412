@@ -55,6 +55,10 @@ static const uint8_t CMD_RESTART = 0x00A3;
 static const uint8_t CMD_BLUETOOTH = 0x00A4;
 static const uint8_t CMD_DYNAMIC_BACKGROUND_CORRECTION = 0x000B;
 static const uint8_t CMD_QUEY_DYNAMIC_BACKGROUND_CORRECTION = 0x001B;
+static const uint8_t CMD_MOTION_GATE_SENS = 0x0003;
+static const uint8_t CMD_QUERY_MOTION_GATE_SENS = 0x0013;
+static const uint8_t CMD_STATIC_GATE_SENS = 0x0004;
+static const uint8_t CMD_QUERY_STATIC_GATE_SENS = 0x0014;
 
 enum BaudRateStructure : uint8_t {
   BAUD_RATE_9600 = 1,
@@ -202,7 +206,8 @@ class LD2412Component : public Component, public uart::UARTDevice {
   void set_gate_still_threshold_number(int gate, number::Number *n);
   void set_gate_move_threshold_number(int gate, number::Number *n);
   void set_basic_config();
-//  void set_gate_threshold(uint8_t gate);
+  void set_gate_threshold();
+  void get_gate_threshold();
 #endif
 #ifdef USE_SENSOR
   void set_gate_move_sensor(int gate, sensor::Sensor *s);
