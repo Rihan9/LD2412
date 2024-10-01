@@ -39,6 +39,78 @@ sensor:
       name: Still Energy
     detection_distance:
       name: Detection Distance
+    light:
+      name: light
+    g0:
+      move_energy:
+        name: g00 move energy
+      still_energy:
+        name: g00 still energy
+    g1:
+      move_energy:
+        name: g01 move energy
+      still_energy:
+        name: g01 still energy
+    g2:
+      move_energy:
+        name: g02 move energy
+      still_energy:
+        name: g02 still energy
+    g3:
+      move_energy:
+        name: g03 move energy
+      still_energy:
+        name: g03 still energy
+    g4:
+      move_energy:
+        name: g04 move energy
+      still_energy:
+        name: g04 still energy
+    g5:
+      move_energy:
+        name: g05 move energy
+      still_energy:
+        name: g05 still energy
+    g6:
+      move_energy:
+        name: g06 move energy
+      still_energy:
+        name: g06 still energy
+    g7:
+      move_energy:
+        name: g07 move energy
+      still_energy:
+        name: g07 still energy
+    g8:
+      move_energy:
+        name: g08 move energy
+      still_energy:
+        name: g08 still energy
+    g9:
+      move_energy:
+        name: g09 move energy
+      still_energy:
+        name: g09 still energy
+    g10:
+      move_energy:
+        name: g10 move energy
+      still_energy:
+        name: g10 still energy
+    g11:
+      move_energy:
+        name: g11 move energy
+      still_energy:
+        name: g11 still energy
+    g12:
+      move_energy:
+        name: g12 move energy
+      still_energy:
+        name: g12 still energy
+    g13:
+      move_energy:
+        name: g13 move energy
+      still_energy:
+        name: g13 still energy
 
 number:
   - platform: LD2412
@@ -173,9 +245,4 @@ What does work
 - Distance resolution
 - Factory reset button
 - Bluetooth switch. 
-- Engineering mode: siwth to and back from, threshold configuration
-
-What doesn't
---
-- Engineering mode: gate sensor when the engineering mode is active
-- Light configuration / threashold and light sensor ot implemented by the production company in the serial protocol for the first two. The light sensor is available only in engineering mode, quite useless.
+- Engineering mode: switch to and back from, threshold configuration, gate sensing and light sensor

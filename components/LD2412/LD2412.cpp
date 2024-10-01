@@ -258,49 +258,51 @@ void LD2412Component::handle_periodic_data_(uint8_t *buffer, int len) {
     if (this->detection_distance_sensor_->get_state() != new_detect_distance)
       this->detection_distance_sensor_->publish_state(new_detect_distance);
   }
-  //if (engineering_mode) {
+  if (engineering_mode) {
     /*
       Moving distance range: 18th byte
       Still distance range: 19th byte
       Moving enery: 20~28th bytes
     */
-    // for (std::vector<sensor::Sensor *>::size_type i = 0; i != this->gate_move_sensors_.size(); i++) {
-    //   sensor::Sensor *s = this->gate_move_sensors_[i];
-    //   if (s != nullptr) {
-    //     s->publish_state(buffer[MOVING_SENSOR_START + i]);
-    //   }
-    // }
+    for (std::vector<sensor::Sensor *>::size_type i = 0; i != this->gate_move_sensors_.size(); i++) {
+      sensor::Sensor *s = this->gate_move_sensors_[i];
+      if (s != nullptr) {
+        s->publish_state(buffer[MOVING_SENSOR_START + i]);
+      }
+    }
     /*
       Still energy: 29~37th bytes
     */
-    // for (std::vector<sensor::Sensor *>::size_type i = 0; i != this->gate_still_sensors_.size(); i++) {
-    //   sensor::Sensor *s = this->gate_still_sensors_[i];
-    //   if (s != nullptr) {
-    //     s->publish_state(buffer[STILL_SENSOR_START + i]);
-    //   }
-    // }
+    for (std::vector<sensor::Sensor *>::size_type i = 0; i != this->gate_still_sensors_.size(); i++) {
+      sensor::Sensor *s = this->gate_still_sensors_[i];
+      if (s != nullptr) {
+        s->publish_state(buffer[STILL_SENSOR_START + i]);
+      }
+    }
     /*
       Light sensor: 38th bytes
     */
-    // if (this->light_sensor_ != nullptr) {
-    //   int new_light_sensor = buffer[LIGHT_SENSOR];
-    //   if (this->light_sensor_->get_state() != new_light_sensor)
-    //     this->light_sensor_->publish_state(new_light_sensor);
-    // }
-  //} else {
-    // for (auto *s : this->gate_move_sensors_) {
-    //   if (s != nullptr && !std::isnan(s->get_state())) {
-    //     s->publish_state(NAN);
-    //   }
-    // }
-    // for (auto *s : this->gate_still_sensors_) {
-    //   if (s != nullptr && !std::isnan(s->get_state())) {
-    //     s->publish_state(NAN);
-    //   }
-    // }
-    //if (this->light_sensor_ != nullptr && !std::isnan(this->light_sensor_->get_state())) {
-    //  this->light_sensor_->publish_state(NAN);
-    //}
+    if (this->light_sensor_ != nullptr) {
+      int new_light_sensor = buffer[LIGHT_SENSOR];
+      if (this->light_sensor_->get_state() != new_light_sensor)
+        this->light_sensor_->publish_state(new_light_sensor);
+    }
+  } 
+  if(!engineering_mode) {
+    for (auto *s : this->gate_move_sensors_) {
+      if (s != nullptr && !std::isnan(s->get_state())) {
+        s->publish_state(NAN);
+      }
+    }
+    for (auto *s : this->gate_still_sensors_) {
+      if (s != nullptr && !std::isnan(s->get_state())) {
+        s->publish_state(NAN);
+      }
+    }
+    if (this->light_sensor_ != nullptr && !std::isnan(this->light_sensor_->get_state())) {
+      this->light_sensor_->publish_state(NAN);
+    }
+  }
   //}
 #endif
 #ifdef USE_BINARY_SENSOR
