@@ -176,6 +176,17 @@ void LD2412Component::handle_periodic_data_(uint8_t *buffer, int len) {
     0x02: Normal mode
   */
   bool engineering_mode = buffer[DATA_TYPES] == 0x01;
+#ifdef USE_SELECT
+  if (this->mode_select_ != nullptr) {
+    if(this->mode_select_->state == "Engineering" && !engineering_mode){
+      this->mode_select_->publish_state("Normal");
+    }
+    if(this->mode_select_->state == "Normal" && engineering_mode){
+      this->mode_select_->publish_state("Engineering");
+    }
+  }
+#endif
+
 //#ifdef USE_SWITCH
 //  if (this->engineering_mode_switch_ != nullptr &&
 //      current_millis - last_engineering_mode_change_millis_ > this->throttle_) {
