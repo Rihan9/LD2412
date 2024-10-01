@@ -48,7 +48,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_LIGHT): sensor.sensor_schema(
             device_class=DEVICE_CLASS_ILLUMINANCE,
             icon=ICON_LIGHTBULB,
-            unit_of_measurement=UNIT_LUX
+            unit_of_measurement=UNIT_PERCENT
         ),
         cv.Optional(CONF_DETECTION_DISTANCE): sensor.sensor_schema(
             device_class=DEVICE_CLASS_DISTANCE,
