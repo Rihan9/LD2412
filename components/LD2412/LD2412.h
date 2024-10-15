@@ -124,7 +124,7 @@ static const uint8_t CMD_FRAME_END[4] = {0x04, 0x03, 0x02, 0x01};
 static const uint8_t DATA_FRAME_HEADER[4] = {0xF4, 0xF3, 0xF2, 0xF1};
 static const uint8_t DATA_FRAME_END[4] = {0xF8, 0xF7, 0xF6, 0xF5};
 
-static const char HEX[] = "0123456789ABCDEF"; 
+static const char HEX_POSITIONING_CONVERSION[] = "0123456789ABCDEF"; 
 
 /*
 Data Type: 6th byte
@@ -245,8 +245,8 @@ class LD2412Component : public Component, public uart::UARTDevice {
     version.resize(len*2+1);
     for (size_t i = 0; i < len; i++)
     {
-      version[(i * 2) + 0] = HEX[((buffer[i] & 0xF0) >> 4)];
-      version[(i * 2) + 1] = HEX[((buffer[i] & 0x0F) >> 0)];
+      version[(i * 2) + 0] = HEX_POSITIONING_CONVERSION[((buffer[i] & 0xF0) >> 4)];
+      version[(i * 2) + 1] = HEX_POSITIONING_CONVERSION[((buffer[i] & 0x0F) >> 0)];
     }
     return version;
   }
