@@ -734,7 +734,6 @@ void LD2412Component::set_basic_config() {
   this->set_config_mode_(true);
   this->send_command_(CMD_BASIC_CONF, value, 5);
   delay(50);  // NOLINT
-  this->set_timeout(200, [this]() { this->restart_and_read_all_info(); });
   this->set_config_mode_(false);
 }
 
