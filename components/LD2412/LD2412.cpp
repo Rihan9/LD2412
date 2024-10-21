@@ -562,6 +562,21 @@ void LD2412Component::readline_(int readch, uint8_t *buffer, int len) {
   static int pos = 0;
 
   if (readch >= 0) {
+    if(pos == 0 && readch != DATA_FRAME_HEADER[0] && readch != CMD_FRAME_HEADER[0]){
+      return;
+    }
+    if(pos == 1 && readch != DATA_FRAME_HEADER[1] && readch != CMD_FRAME_HEADER[1]){
+      pos = 0;
+      return;
+    }
+    if(pos == 2 && readch != DATA_FRAME_HEADER[2] && readch != CMD_FRAME_HEADER[2]){
+      pos = 0;
+      return;
+    }
+    if(pos == 3 && readch != DATA_FRAME_HEADER[3] && readch != CMD_FRAME_HEADER[3]){
+      pos = 0;
+      return;
+    }
     if (pos < len - 1) {
       buffer[pos++] = readch;
       buffer[pos] = 0;
