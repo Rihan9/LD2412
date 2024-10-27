@@ -640,7 +640,7 @@ void LD2412Component::set_baud_rate(const std::string &state) {
 
 void LD2412Component::set_mode(const std::string &state) {
   this->set_config_mode_(true);
-  uint8_t cmd;
+  uint8_t cmd = CMD_NONE;
   switch(MODE_ENUM_TO_INT.at(state)){
     case NORMAL_MODE:
       cmd = CMD_DISABLE_ENG;
@@ -652,11 +652,13 @@ void LD2412Component::set_mode(const std::string &state) {
       cmd = CMD_DYNAMIC_BACKGROUND_CORRECTION;
       break;
   }
-  this->send_command_(cmd, nullptr, 0);
-  this->set_config_mode_(false);
-  if(cmd == CMD_DYNAMIC_BACKGROUND_CORRECTION){
-    this->dynamic_bakground_correction_active_ = true;
-    this->set_timeout(1000, [this]() { this->query_dymanic_background_correction_(); });
+  if(cmd != CMD_NONE){
+    this->send_command_(cmd, nullptr, 0);
+    this->set_config_mode_(false);
+    if(cmd == CMD_DYNAMIC_BACKGROUND_CORRECTION){
+      this->dynamic_bakground_correction_active_ = true;
+      this->set_timeout(1000, [this]() { this->query_dymanic_background_correction_(); });
+    }
   }
 }
 

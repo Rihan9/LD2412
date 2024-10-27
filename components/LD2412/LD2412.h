@@ -59,6 +59,7 @@ static const uint8_t CMD_MOTION_GATE_SENS = 0x0003;
 static const uint8_t CMD_QUERY_MOTION_GATE_SENS = 0x0013;
 static const uint8_t CMD_STATIC_GATE_SENS = 0x0004;
 static const uint8_t CMD_QUERY_STATIC_GATE_SENS = 0x0014;
+static const uint8_t CMD_NONE = 0x0000;
 
 enum BaudRateStructure : uint8_t {
   BAUD_RATE_9600 = 1,
