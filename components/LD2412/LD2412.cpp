@@ -467,11 +467,13 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
     case lowbyte(CMD_QUEY_DYNAMIC_BACKGROUND_CORRECTION):
       ESP_LOGV(TAG, "Handled query dynamic background correction");
       dynamic_background_correction_active = (buffer[10] == 0x01);
+#ifdef USE_SELECT
       if(this->dynamic_bakground_correction_active_ != dynamic_background_correction_active && dynamic_background_correction_active){
         this->mode_select_->publish_state("Dynamic background correction");
       }else if(this->dynamic_bakground_correction_active_ != dynamic_background_correction_active && !dynamic_background_correction_active){
         this->mode_select_->publish_state("Normal");
       }
+#endif
       this->dynamic_bakground_correction_active_ = dynamic_background_correction_active;
       if(this->dynamic_bakground_correction_active_){
         this->set_timeout(1000, [this]() { this->query_dymanic_background_correction_(); });
@@ -491,9 +493,11 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
 //      break;
     case lowbyte(CMD_QUERY_MOTION_GATE_SENS):{
       std::vector<std::function<void(void)>> updates;
+#ifdef USE_NUMBER
       for(int i = 0; i < this->gate_still_threshold_numbers_.size(); i++){
         updates.push_back(set_number_value(this->gate_move_threshold_numbers_[i], buffer[10+i]));
       }
+#endif
       for (auto &update : updates) {
         update();
       }
@@ -501,9 +505,11 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
     }
     case lowbyte(CMD_QUERY_STATIC_GATE_SENS):{
       std::vector<std::function<void(void)>> updates;
+#ifdef USE_NUMBER
       for(int i = 0; i < this->gate_still_threshold_numbers_.size(); i++){
         updates.push_back(set_number_value(this->gate_still_threshold_numbers_[i], buffer[10+i]));
       }
+#endif
       for (auto &update : updates) {
         update();
       }
