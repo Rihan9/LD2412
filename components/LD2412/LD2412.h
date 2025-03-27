@@ -7,7 +7,7 @@
 #ifdef USE_SENSOR
 #include "esphome/components/sensor/sensor.h"
 #endif
-#ifdef USE_NUMBER
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
 #include "esphome/components/number/number.h"
 #endif
 #ifdef USE_SWITCH
@@ -16,7 +16,7 @@
 #ifdef USE_BUTTON
 #include "esphome/components/button/button.h"
 #endif
-#ifdef USE_SELECT
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
 #include "esphome/components/select/select.h"
 #endif
 #ifdef USE_TEXT_SENSOR
@@ -173,7 +173,7 @@ class LD2412Component : public Component, public uart::UARTDevice {
   SUB_TEXT_SENSOR(version)
   SUB_TEXT_SENSOR(mac)
 #endif
-#ifdef USE_SELECT
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
   SUB_SELECT(distance_resolution)
   SUB_SELECT(baud_rate)
   SUB_SELECT(light_function)
@@ -189,7 +189,7 @@ class LD2412Component : public Component, public uart::UARTDevice {
   SUB_BUTTON(restart)
   SUB_BUTTON(query)
 #endif
-#ifdef USE_NUMBER
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
   SUB_NUMBER(max_distance_gate)
   SUB_NUMBER(min_distance_gate)
   SUB_NUMBER(timeout)
@@ -202,7 +202,7 @@ class LD2412Component : public Component, public uart::UARTDevice {
   void dump_config() override;
   void loop() override;
   void set_light_out_control();
-#ifdef USE_NUMBER
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
   void set_gate_still_threshold_number(int gate, number::Number *n);
   void set_gate_move_threshold_number(int gate, number::Number *n);
   void set_basic_config();
@@ -260,7 +260,7 @@ class LD2412Component : public Component, public uart::UARTDevice {
   bool dynamic_bakground_correction_active_;
   std::string light_function_;
   float light_threshold_ = -1;
-#ifdef USE_NUMBER
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
   std::vector<number::Number *> gate_still_threshold_numbers_ = std::vector<number::Number *>(14);
   std::vector<number::Number *> gate_move_threshold_numbers_ = std::vector<number::Number *>(14);
 #endif

@@ -1,7 +1,7 @@
 #include "LD2412.h"
 
 #include <utility>
-#ifdef USE_NUMBER
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
 #include "esphome/components/number/number.h"
 #endif
 #ifdef USE_SENSOR
@@ -53,14 +53,14 @@ void LD2412Component::dump_config() {
   LOG_TEXT_SENSOR("  ", "VersionTextSensor", this->version_text_sensor_);
   LOG_TEXT_SENSOR("  ", "MacTextSensor", this->mac_text_sensor_);
 #endif
-#ifdef USE_SELECT
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
 //  LOG_SELECT("  ", "LightFunctionSelect", this->light_function_select_);
   LOG_SELECT("  ", "OutPinLevelSelect", this->out_pin_level_select_);
   //LOG_SELECT("  ", "DistanceResolutionSelect", this->distance_resolution_select_);
   LOG_SELECT("  ", "BaudRateSelect", this->baud_rate_select_);
   LOG_SELECT("  ", "ModeSelect", this->mode_select_);
 #endif
-#ifdef USE_NUMBER
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
 //  LOG_NUMBER("  ", "LightThresholdNumber", this->light_threshold_number_);
   LOG_NUMBER("  ", "MaxDistanceGateNumber", this->max_distance_gate_number_);
   LOG_NUMBER("  ", "MinDistanceGateNumber", this->min_distance_gate_number_);
@@ -99,12 +99,12 @@ void LD2412Component::read_all_info() {
   delay(10);  // NOLINT
   this->query_dymanic_background_correction_();
   delay(10);  // NOLINT
-#ifdef USE_NUMBER
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
   this->get_gate_threshold();
   delay(10);  // NOLINT
 #endif
   this->set_config_mode_(false);
-#ifdef USE_SELECT
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
   const auto baud_rate = std::to_string(this->parent_->get_baud_rate());
   if (this->baud_rate_select_ != nullptr && this->baud_rate_select_->state != baud_rate) {
     this->baud_rate_select_->publish_state(baud_rate);
@@ -176,7 +176,7 @@ void LD2412Component::handle_periodic_data_(uint8_t *buffer, int len) {
     0x02: Normal mode
   */
   bool engineering_mode = buffer[DATA_TYPES] == 0x01;
-#ifdef USE_SELECT
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
   if (this->mode_select_ != nullptr) {
     if(this->mode_select_->state == "Engineering" && !engineering_mode){
       this->mode_select_->publish_state("Normal");
@@ -352,7 +352,7 @@ std::string format_mac(uint8_t *buffer) {
   return mac;
 }
 
-#ifdef USE_NUMBER
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
 std::function<void(void)> set_number_value(number::Number *n, float value) {
   float normalized_value = value * 1.0;
   if (n != nullptr && (!n->has_state() || n->state != normalized_value)) {
@@ -395,7 +395,7 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
       break;
     case lowbyte(CMD_SET_BAUD_RATE):
       ESP_LOGV(TAG, "Handled baud rate change command");
-#ifdef USE_SELECT
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
       if (this->baud_rate_select_ != nullptr) {
         ESP_LOGE(TAG, "Change baud rate component config to %s and reinstall", this->baud_rate_select_->state.c_str());
       }
@@ -414,7 +414,7 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
       std::string distance_resolution =
           DISTANCE_RESOLUTION_INT_TO_ENUM.at(this->two_byte_to_int_(buffer[10], buffer[11]));
       ESP_LOGV(TAG, "Distance resolution is: %s", const_cast<char *>(distance_resolution.c_str()));
-#ifdef USE_SELECT
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
       if (this->distance_resolution_select_ != nullptr &&
           this->distance_resolution_select_->state != distance_resolution) {
         this->distance_resolution_select_->publish_state(distance_resolution);
@@ -428,7 +428,7 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
     //  ESP_LOGV(TAG, "Light function is: %s", const_cast<char *>(this->light_function_.c_str()));
     //  ESP_LOGV(TAG, "Light threshold is: %f", this->light_threshold_);
     //  ESP_LOGV(TAG, "Out pin level is: %s", const_cast<char *>(this->out_pin_level_.c_str()));
-    // #ifdef USE_SELECT
+    // #if  defined(USE_SELECT) || defined(USE_NUMBER)
     //       if (this->light_function_select_ != nullptr && this->light_function_select_->state != this->light_function_) {
     //         this->light_function_select_->publish_state(this->light_function_);
     //       }
@@ -436,7 +436,7 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
     //         this->out_pin_level_select_->publish_state(this->out_pin_level_);
     //       }
     // #endif
-    // #ifdef USE_NUMBER
+    // #if  defined(USE_SELECT) || defined(USE_NUMBER)
     //       if (this->light_threshold_number_ != nullptr &&
     //           (!this->light_threshold_number_->has_state() ||
     //            this->light_threshold_number_->state != this->light_threshold_)) {
@@ -511,7 +511,7 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
     }
     case lowbyte(CMD_QUERY):  // Query parameters response
     {
-#ifdef USE_NUMBER
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
       /*
         Moving distance range: 9th byte
         Still distance range: 10th byte
@@ -529,7 +529,7 @@ bool LD2412Component::handle_ack_data_(uint8_t *buffer, int len) {
         Output pin configuration: 13th bytes
       */
       this->out_pin_level_ = OUT_PIN_LEVEL_INT_TO_ENUM.at(buffer[14]);
-#ifdef USE_SELECT
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
       if (this->out_pin_level_select_ != nullptr && this->out_pin_level_select_->state != this->out_pin_level_) {
         this->out_pin_level_select_->publish_state(this->out_pin_level_);
       }
@@ -674,7 +674,7 @@ void LD2412Component::set_engineering_mode(bool enable) {
 void LD2412Component::factory_reset() {
   this->set_config_mode_(true);
   this->send_command_(CMD_RESET, nullptr, 0);
-#ifdef USE_SELECT
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
   if (this->baud_rate_select_ != nullptr){
     this->baud_rate_select_->publish_state("115200");
   }
@@ -694,7 +694,7 @@ void LD2412Component::get_distance_resolution_() { this->send_command_(CMD_QUERY
 
 // void LD2412Component::get_light_control_() { this->send_command_(CMD_QUERY_LIGHT_CONTROL, nullptr, 0); }
 
-#ifdef USE_NUMBER
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
 void LD2412Component::set_basic_config() {
   if (
       !this->min_distance_gate_number_->has_state() || 
@@ -775,12 +775,12 @@ void LD2412Component::set_gate_move_threshold_number(int gate, number::Number *n
 #endif
 
 void LD2412Component::set_light_out_control() {
-// #ifdef USE_NUMBER
+// #if  defined(USE_SELECT) || defined(USE_NUMBER)
 //   if (this->light_threshold_number_ != nullptr && this->light_threshold_number_->has_state()) {
 //     this->light_threshold_ = this->light_threshold_number_->state;
 //   }
 // #endif
-#ifdef USE_SELECT
+#if  defined(USE_SELECT) || defined(USE_NUMBER)
 //   if (this->light_function_select_ != nullptr && this->light_function_select_->has_state()) {
 //     this->light_function_ = this->light_function_select_->state;
 //   }
