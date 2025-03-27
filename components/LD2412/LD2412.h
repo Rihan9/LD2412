@@ -210,6 +210,9 @@ class LD2412Component : public Component, public uart::UARTDevice {
   void set_gate_threshold();
   void get_gate_threshold();
 #endif
+#if !defined(USE_NUMBER) && defined(USE_SELECT)
+  void set_basic_config();
+#endif
 #ifdef USE_SENSOR
   void set_gate_move_sensor(int gate, sensor::Sensor *s);
   void set_gate_still_sensor(int gate, sensor::Sensor *s);

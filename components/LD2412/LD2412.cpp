@@ -717,6 +717,13 @@ void LD2412Component::get_distance_resolution_() { this->send_command_(CMD_QUERY
 
 // void LD2412Component::get_light_control_() { this->send_command_(CMD_QUERY_LIGHT_CONTROL, nullptr, 0); }
 
+#if !defined(USE_NUMBER) && defined(USE_SELECT)
+void LD2412Component::set_basic_config() {
+  //UNINPLEMENTED
+}
+#endif
+
+
 #ifdef USE_NUMBER
 void LD2412Component::set_basic_config() {
   if (
