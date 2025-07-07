@@ -467,7 +467,7 @@ void LD2412Component::handle_periodic_data_() {
       Light sensor: 38th bytes
     */
     if (this->light_sensor_ != nullptr) {
-      int new_light_sensor = (this->buffer_data_[LIGHT_SENSOR] * 100) / 255;
+      int new_light_sensor = this->buffer_data_[LIGHT_SENSOR];
       if (this->light_sensor_->get_state() != new_light_sensor) {
         this->light_sensor_->publish_state(new_light_sensor);
       }
