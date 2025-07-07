@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import sensor
 import esphome.config_validation as cv
-from esphome.const import (
+from const import (
     CONF_LIGHT,
     CONF_MOVING_DISTANCE,
     DEVICE_CLASS_DISTANCE,

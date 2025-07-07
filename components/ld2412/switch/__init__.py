@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import switch
 import esphome.config_validation as cv
-from esphome.const import (
+from ..const import (
     CONF_BLUETOOTH,
     DEVICE_CLASS_SWITCH,
     ENTITY_CATEGORY_CONFIG,

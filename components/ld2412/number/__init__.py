@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import number
 import esphome.config_validation as cv
-from esphome.const import (
+from ..const import (
     CONF_ID,
     CONF_MOVE_THRESHOLD,
     CONF_STILL_THRESHOLD,
