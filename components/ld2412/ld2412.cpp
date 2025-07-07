@@ -205,6 +205,10 @@ static bool validate_header_footer(const uint8_t *header_footer, const uint8_t *
   return true;  // Valid header/footer
 }
 
+std::string format_mac_address_pretty(const uint8_t *mac) {
+  return str_snprintf("%02X:%02X:%02X:%02X:%02X:%02X", 17, mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+}
+
 void LD2412Component::dump_config() {
   std::string mac_str =
       mac_address_is_valid(this->mac_address_) ? format_mac_address_pretty(this->mac_address_) : UNKNOWN_MAC;
