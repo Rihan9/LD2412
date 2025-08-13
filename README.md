@@ -1,5 +1,10 @@
 LD2412 support for EspHome
 =======
+Important Information
+--
+This component has been merged in the official esphome repository. So, this repository will be no longer maintained. Please, if you find an issue or want to suggest an improvement, use the official repositories from now on. Thank you all for the collaboration until now!
+
+
 Introduction
 --
 Hi all! This repo contains the revision of the official LD2410 component adapted for the LD2412. Below you can find an example of the configuration, what works and what doesn’t compared to the LD2410 component. This repository is not to be considered production-ready, but rather a starting point for the implementation of this device on EspHome. Unfortunately, I don’t have much time to dedicate to it, so unless someone forks it, progress will be a bit slow.
